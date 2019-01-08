@@ -1,12 +1,11 @@
 package dot.empire.gol;
 
-import java.awt.Component;
-import java.awt.GridLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import javax.swing.JButton;
-import javax.swing.JFrame;
 
 /**
  * Main Frame. Created by siD at 09 Apr 2018 5:04:01 PM.
@@ -14,6 +13,8 @@ import javax.swing.JFrame;
  * @author siD
  */
 public class FrameMain extends JFrame {
+
+    LinkedList<Runnable> r = new LinkedList<>();
 
     private int size = 46;
     private JButton[][] arr;
@@ -139,13 +140,29 @@ public class FrameMain extends JFrame {
             for (int y = 0; y < size; y++) {
                 if (isAlive(x, y)) {
                     if (isAlone(x, y) || isCrowded(x, y)) {
-                        die(x, y);
+                        final int xPos = x;
+                        final int yPos = y;
+
+                        r.add(() -> {
+                            die(xPos, yPos);
+                        });
                     }
                 } else if (getNumFriends(x, y) == 3) {
-                    this.arr[x][y].setEnabled(true);
+
+                    final int xPos = x;
+                    final int yPos = y;
+
+                    r.add(() -> {
+                        arr[xPos][yPos].setEnabled(true);
+                    });
                 }
             }
         }
+
+        for (Runnable evt : r) {
+            evt.run();
+        }
+        r.clear();
     }
 
     /**

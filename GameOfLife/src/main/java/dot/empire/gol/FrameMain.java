@@ -8,15 +8,21 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Main Frame. Created by siD at 09 Apr 2018 5:04:01 PM.
+ * Main Frame. Created by Matthew 'siD' Van der Bijl at 09 Apr 2018 5:04:01 PM.
  *
- * @author siD
+ * @author Matthew 'siD' Van der Bijl
  */
 public class FrameMain extends JFrame {
 
-    LinkedList<Runnable> r = new LinkedList<>();
+    /**
+     * List of events to run at the end of the simulation.
+     */
+    private final LinkedList<Runnable> events;
 
     private int size = 46;
+    /**
+     * Cells.
+     */
     private JButton[][] arr;
 
     /**
@@ -28,7 +34,9 @@ public class FrameMain extends JFrame {
         super("~ Conway's Game of Life ~");
         this.initComponents();
 
-        super.setLocationRelativeTo(parent);
+        this.events = new LinkedList<>();
+
+        super.setLocationRelativeTo(parent); // position main frame
 
         // --
         this.arr = new JButton[size][size];
@@ -43,6 +51,7 @@ public class FrameMain extends JFrame {
 
         this.create();
 
+        // Runs the simulation
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -60,6 +69,13 @@ public class FrameMain extends JFrame {
         }
     }
 
+    /**
+     *
+     * @param x position of the cell on the X-axis
+     * @param y position of the cell on the Y-axis
+     *
+     * @return true of the block is alone
+     */
     private boolean isAlone(int x, int y) {
         return getNumFriends(x, y) < 2;
     }
@@ -68,6 +84,14 @@ public class FrameMain extends JFrame {
         return getNumFriends(x, y) > 3;
     }
 
+    /**
+     * Gets the numbers of alive cells surround a given block
+     *
+     * @param x position of the cell on the X-axis
+     * @param y position of the cell on the Y-axis
+     *
+     * @return the number of neighbours of the block
+     */
     private int getNumFriends(int x, int y) {
         int num = 0;
 
@@ -127,14 +151,31 @@ public class FrameMain extends JFrame {
         return num;
     }
 
+    /**
+     * Checks if a given block is alive or not.
+     *
+     * @param x position of the cell on the X-axis
+     * @param y position of the cell on the Y-axis
+     *
+     * @return true if the block is alive
+     */
     private boolean isAlive(int x, int y) {
         return this.arr[x][y].isEnabled();
     }
 
+    /**
+     * Kills a cell at a given position.
+     *
+     * @param x position of the cell on the X-axis
+     * @param y position of the cell on the Y-axis
+     */
     private void die(int x, int y) {
         this.arr[x][y].setEnabled(false);
     }
 
+    /**
+     * Used to update the simulation.
+     */
     private void update() {
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
@@ -143,7 +184,7 @@ public class FrameMain extends JFrame {
                         final int xPos = x;
                         final int yPos = y;
 
-                        r.add(() -> {
+                        events.add(() -> {
                             die(xPos, yPos);
                         });
                     }
@@ -152,17 +193,17 @@ public class FrameMain extends JFrame {
                     final int xPos = x;
                     final int yPos = y;
 
-                    r.add(() -> {
+                    events.add(() -> {
                         arr[xPos][yPos].setEnabled(true);
                     });
                 }
             }
         }
 
-        for (Runnable evt : r) {
+        for (Runnable evt : events) {
             evt.run();
         }
-        r.clear();
+        events.clear();
     }
 
     /**
@@ -174,10 +215,10 @@ public class FrameMain extends JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        scollPane = new javax.swing.JScrollPane();
+        scrollPane = new javax.swing.JScrollPane();
         pnlMain = new javax.swing.JPanel();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        jMenuBar = new javax.swing.JMenuBar();
+        jMenu = new javax.swing.JMenu();
         menuItemRecreate = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -193,9 +234,9 @@ public class FrameMain extends JFrame {
             .addGap(0, 877, Short.MAX_VALUE)
         );
 
-        scollPane.setViewportView(pnlMain);
+        scrollPane.setViewportView(pnlMain);
 
-        jMenu1.setText("File");
+        jMenu.setText("File");
 
         menuItemRecreate.setText("Recreate");
         menuItemRecreate.addActionListener(new java.awt.event.ActionListener() {
@@ -203,21 +244,21 @@ public class FrameMain extends JFrame {
                 menuItemRecreateActionPerformed(evt);
             }
         });
-        jMenu1.add(menuItemRecreate);
+        jMenu.add(menuItemRecreate);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar.add(jMenu);
 
-        setJMenuBar(jMenuBar1);
+        setJMenuBar(jMenuBar);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(scollPane)
+            .addComponent(scrollPane)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(scollPane)
+            .addComponent(scrollPane)
         );
 
         pack();
@@ -227,13 +268,13 @@ public class FrameMain extends JFrame {
         this.create();
     }//GEN-LAST:event_menuItemRecreateActionPerformed
 
-    //<editor-fold defaultstate="collapsed" desc="Generated Varibles">  
+    //<editor-fold defaultstate="collapsed" desc="Generated Variables">
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenu jMenu;
+    private javax.swing.JMenuBar jMenuBar;
     private javax.swing.JMenuItem menuItemRecreate;
     private javax.swing.JPanel pnlMain;
-    private javax.swing.JScrollPane scollPane;
+    private javax.swing.JScrollPane scrollPane;
     // End of variables declaration//GEN-END:variables
     //</editor-fold>
 }
